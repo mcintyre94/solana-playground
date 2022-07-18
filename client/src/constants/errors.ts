@@ -1,3 +1,5 @@
+import { PublicKey } from "@solana/web3.js";
+
 export enum ItemError {
   ALREADY_EXISTS = "Already exists",
   INVALID_NAME = "Invalid name",
@@ -106,3 +108,16 @@ export const SERVER_ERROR: ConvertedError = {
 export const OTHER_ERROR: ConvertedError = {
   "unable to infer src variant": "Enum variant does not exist.",
 };
+
+export class AccountDoesNotExistError extends Error {
+  constructor(
+    accountName: string,
+    address: PublicKey,
+  ) {
+
+    const msg = `No account of type ${accountName} found at address ${address.toBase58()}`;
+    super(msg);
+  }
+}
+
+export class AccountError extends Error { };

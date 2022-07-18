@@ -1,6 +1,7 @@
 import { Idl, Program, Provider } from "@project-serum/anchor";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { AccountDoesNotExistError, AccountError } from "../../constants";
 import { PgCommon } from "./common";
 import { PgProgramInfo } from "./program-info";
 import { PgWallet } from "./wallet";
@@ -29,8 +30,13 @@ export class PgAccount {
     wallet: PgWallet | AnchorWallet
   ) {
     const program = await this.getProgram(idl, conn, wallet)
-    const allAccountData = await program.account[PgCommon.camelize(accountName)].all();
-    return allAccountData;
+    const camelAccountName = PgCommon.camelize(accountName);
+    try {
+      const allAccountData = await program.account[camelAccountName].all();
+      return allAccountData;
+    } catch (err: any) {
+      throw new AccountError(`Unknown error fetching account data for ${camelAccountName}`);
+    }
   }
 
   static async fetchOne(
@@ -41,7 +47,15 @@ export class PgAccount {
     wallet: PgWallet | AnchorWallet
   ) {
     const program = await this.getProgram(idl, conn, wallet)
-    const accountData = await program.account[PgCommon.camelize(accountName)].fetch(address);
-    return accountData;
+    const camelAccountName = PgCommon.camelize(accountName);
+    try {
+      const accountData = await program.account[camelAccountName].fetch(address);
+      return accountData;
+    } catch (err: any) {
+      if (err instanceof Error && err.message.startsWith('Account does not exist')) {
+        throw new AccountDoesNotExistError(camelAccountName, address);
+      }
+      throw new AccountError(`Unknown error fetching account data for ${camelAccountName} at ${address.toBase58()}`);
+    }
   }
 }

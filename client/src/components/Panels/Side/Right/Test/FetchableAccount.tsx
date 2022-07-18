@@ -1,8 +1,12 @@
 import { BN, Idl } from "@project-serum/anchor";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
+import { useAtom } from "jotai";
 import { FC, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
+import { AccountError } from "../../../../../constants";
+import { terminalOutputAtom } from "../../../../../state";
+import { PgTerminal } from "../../../../../utils/pg";
 import { PgAccount } from "../../../../../utils/pg/account";
 import Button from "../../../../Button";
 import Foldable from "../../../../Foldable";
@@ -34,6 +38,8 @@ const FetchableAccountInside = ({ accountName, idl }: FetchableAccountInsideProp
   const [enteredAddress, setEnteredAddress] = useState("");
   const [fetchedData, setFetchedData] = useState<any>();
 
+  const [, setTerminal] = useAtom(terminalOutputAtom);
+
   useEffect(() => {
     // The default BN.toJSON is a hex string, but we want a readable string
     // Temporarily change it to use a plain toString while this component is mounted
@@ -49,16 +55,29 @@ const FetchableAccountInside = ({ accountName, idl }: FetchableAccountInsideProp
   const fetchAll = async () => {
     if (!currentWallet) return;
     setFetchedData(null);
-    const accountData = await PgAccount.fetchAll(accountName, idl, conn, currentWallet);
-    console.log({ accountData });
-    setFetchedData(accountData);
+    PgTerminal.disable();
+    let msg = "";
+    try {
+      const accountData = await PgAccount.fetchAll(accountName, idl, conn, currentWallet);
+      msg = `${PgTerminal.CHECKMARK}  Fetched data for ${accountName} accounts ${PgTerminal.success("success")}`;
+      setFetchedData(accountData);
+    } catch (err: any) {
+      if (err instanceof AccountError) {
+        msg = `${PgTerminal.CROSS}   ${PgTerminal.error(err.message)}.`;
+      } else {
+        msg = `${PgTerminal.CROSS}   Failed to fetch accounts ${PgTerminal.error("Unknown error")}`
+      }
+    } finally {
+      setTerminal(msg);
+      PgTerminal.enable();
+    }
+
   }
 
   const fetchEntered = async () => {
     if (!currentWallet) return;
     setFetchedData(null);
     const accountData = await PgAccount.fetchOne(accountName, new PublicKey(enteredAddress), idl, conn, currentWallet);
-    console.log({ accountData: accountData.data.toString() });
     setFetchedData(accountData);
   }
 
