@@ -133,7 +133,7 @@ pub fn compile(python_source: String, program_name: String) -> Result<String, Co
     return Ok(rust_source);
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = "compileSeahorse")]
 pub fn compile_wasm(python_source: String, program_name: String) -> String {
     compile(python_source, program_name).unwrap()
 }

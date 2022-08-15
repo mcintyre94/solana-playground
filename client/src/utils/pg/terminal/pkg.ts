@@ -11,6 +11,10 @@ export interface Pkgs {
     commitment: string,
     keypairBytes: Uint8Array
   ) => void;
+  compileSeahorse?: (
+    pythonSource: string,
+    programName: string
+  ) => string;
 }
 
 export interface PkgInfo {
@@ -21,6 +25,7 @@ export interface PkgInfo {
 export enum PkgName {
   SOLANA_CLI = "solana-cli",
   SPL_TOKEN_CLI = "spl-token-cli",
+  SEAHORSE_LANG = "seahorse-lang",
 }
 
 enum PkgUiName {
@@ -48,6 +53,8 @@ export class PgPkg {
         return await import("solana-cli-wasm");
       case PkgName.SPL_TOKEN_CLI:
         return await import("spl-token-cli-wasm");
+      case PkgName.SEAHORSE_LANG:
+        return await import("seahorse-lang-wasm");
     }
   }
 }
