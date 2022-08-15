@@ -17,6 +17,9 @@ name = "seahorse"
 proc-macro2 = "1.0.40"
 quote = "1.0.20"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 clap = { version = "3.2.8", features = ["derive", "cargo"] }
 heck = "0.4.0"
