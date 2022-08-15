@@ -4,6 +4,7 @@ use crate::core::{
 };
 use owo_colors::OwoColorize;
 use std::{error, fmt};
+use wasm_bindgen::prelude::*;
 
 #[derive(Debug, Clone)]
 pub enum CoreError {
@@ -130,4 +131,9 @@ pub fn compile(python_source: String, program_name: String) -> Result<String, Co
     let rust_source = from_seahorse_ast(seahorse_ast, program_name).map_err(contextualize)?;
 
     return Ok(rust_source);
+}
+
+#[wasm_bindgen]
+pub fn compile_wasm(python_source: String, program_name: String) -> String {
+    compile(python_source, program_name).unwrap()
 }

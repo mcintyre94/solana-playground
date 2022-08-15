@@ -2163,6 +2163,7 @@ dependencies = [
  "rustpython-parser",
  "spinners",
  "toml_edit",
+ "wasm-bindgen",
 ]
 
 [[package]]
