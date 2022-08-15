@@ -15,7 +15,9 @@ impl ToTokens for Def {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         tokens.extend(match self {
             Def::TyDef(def) if def.is_account() => quote! {
-                #[derive(Debug)]
+                // Work around missing #![feature(macro_attributes_in_derive_output)] in playground
+                // I think playground uses an earlier rust version?
+                // #[derive(Debug)]
                 #[account]
                 #def
             },
@@ -927,7 +929,7 @@ pub fn from_seahorse_ast(ast: Program, program_name: String) -> Result<String, C
     let mut source = tokens.to_string();
 
     // Put init lines back
-    let re = Regex::new(r"(?s)__SEAHORSE_INIT__: account!\[\[\[(.*?)\]\]\],").unwrap();
+    let re = Regex::new(r"(?s)__SEAHORSE_INIT__ : account ! \[\[\[(.*?)\]\]\] ,").unwrap();
     source = re.replace_all(&source, "#[account($1)]").to_string();
 
     // Perform some simple regex-based transformations
