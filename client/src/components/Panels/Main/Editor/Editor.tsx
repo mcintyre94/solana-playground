@@ -261,22 +261,22 @@ const Editor = () => {
     const programPkStr = programPkResult.programPk?.toBase58();
 
     // Change in localStorage
-    const findText = "declare_id!";
+    const findText = "declare_id";
     {
-      const lsContent = explorer.getFileContentFromPath("/src/lib.rs");
+      const lsContent = explorer.getFileContentFromPath("/src/lib.py");
       const lsFindTextIndex = lsContent?.indexOf(findText);
       if (!lsContent || !lsFindTextIndex || lsFindTextIndex === -1) return;
       const quoteStartIndex = lsFindTextIndex + findText.length + 2;
-      const quoteEndIndex = lsContent.indexOf('"', quoteStartIndex);
+      const quoteEndIndex = lsContent.indexOf("'", quoteStartIndex);
       if (lsContent.length < quoteStartIndex + 3) return;
 
       const updatedContent =
         lsContent.substring(0, quoteStartIndex) +
         programPkStr +
         lsContent.substring(quoteEndIndex);
-      const data = explorer.files["/src/lib.rs"];
+      const data = explorer.files["/src/lib.py"];
       if (data?.content) {
-        explorer.files["/src/lib.rs"] = { ...data, content: updatedContent };
+        explorer.files["/src/lib.py"] = { ...data, content: updatedContent };
       }
     }
 
@@ -286,7 +286,7 @@ const Editor = () => {
     if (findTextIndex === -1) return;
 
     const quoteStartIndex = findTextIndex + findText.length + 2;
-    const quoteEndIndex = code.indexOf('"', quoteStartIndex);
+    const quoteEndIndex = code.indexOf("'", quoteStartIndex);
 
     if (code.length < quoteStartIndex + 3) return;
 
