@@ -4,7 +4,7 @@ use heck::ToSnakeCase;
 use proc_macro2::{Ident, Literal, TokenStream};
 use quote::{format_ident, quote, ToTokens};
 use regex::{Captures, Regex};
-use rustfmt_wrapper::{config::*, rustfmt_config, Error as RustfmtError};
+// use rustfmt_wrapper::{config::*, rustfmt_config, Error as RustfmtError};
 
 /// Convenience function for turning strings into Idents
 fn ident<S: ToString>(name: &S) -> Ident {
@@ -905,6 +905,7 @@ pub fn from_seahorse_ast(ast: Program, program_name: String) -> Result<String, C
     }
 
     // Run rustfmt
+    /*
     let config = Config {
         // Maybe there will be something here one day
         ..Config::default()
@@ -920,6 +921,10 @@ pub fn from_seahorse_ast(ast: Program, program_name: String) -> Result<String, C
         ),
         _ => CoreError::make_raw("unknown rustfmt error", ""),
     })?;
+    */
+
+    // Convert tokens without using rustfmt
+    let mut source = tokens.to_string();
 
     // Put init lines back
     let re = Regex::new(r"(?s)__SEAHORSE_INIT__: account!\[\[\[(.*?)\]\]\],").unwrap();
