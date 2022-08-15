@@ -909,9 +909,17 @@ pub fn from_seahorse_ast(ast: Program, program_name: String) -> Result<String, C
         // Maybe there will be something here one day
         ..Config::default()
     };
-
-    // WASM: Replaced rustfmt code with this for now
-    let mut source = tokens.to_string();
+    let mut source = rustfmt_config(config, tokens).map_err(|err| match err {
+        RustfmtError::NoRustfmt => CoreError::make_raw(
+            "rustfmt not installed",
+            "Help: Seahorse depends on rustfmt, which is part of the Rust toolchain. To install:\n\n    rustup components add rustfmt"
+        ),
+        RustfmtError::Rustfmt(message) => CoreError::make_raw(
+            "rustfmt error",
+            format!("{}This is most likely an error in Seahorse.", message)
+        ),
+        _ => CoreError::make_raw("unknown rustfmt error", ""),
+    })?;
 
     // Put init lines back
     let re = Regex::new(r"(?s)__SEAHORSE_INIT__: account!\[\[\[(.*?)\]\]\],").unwrap();
