@@ -1,0 +1,20 @@
+{
+  "name": "seahorse-lang",
+  "description": "Write Anchor-compatible Solana programs in Python",
+  "version": "0.1.4",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ameliatastic/seahorse-lang/"
+  },
+  "files": [
+    "seahorse_lang_bg.wasm",
+    "seahorse_lang.js",
+    "seahorse_lang_bg.js",
+    "seahorse_lang.d.ts"
+  ],
+  "module": "seahorse_lang.js",
+  "homepage": "https://seahorse-lang.org/",
+  "types": "seahorse_lang.d.ts",
+  "sideEffects": false
+}
