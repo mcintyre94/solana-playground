@@ -1,39 +1,34 @@
 import { ClassName, Id, ItemError } from "../../constants";
 
-const DEFAULT_FILE = "/src/lib.rs";
-const DEFAULT_CODE = `use anchor_lang::prelude::*;
+const DEFAULT_FILE = "/src/lib.py";
+const DEFAULT_CODE = `# fizzbuzz
+# Built with Seahorse v0.1.0
+#
+# On-chain, persistent FizzBuzz!
 
-// This is your program's public key and it will update
-// automatically when you build the project.
-declare_id!("11111111111111111111111111111111");
+from seahorse.prelude import *
 
-#[program]
-mod hello_anchor {
-    use super::*;
-    pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
-        ctx.accounts.new_account.data = data;
-        msg!("Changed data to: {}!", data); // Message will show up in the tx logs
-        Ok(())
-    }
-}
+# This is your program's public key and it will update
+# automatically when you build the project.
+declare_id('11111111111111111111111111111111')
 
-#[derive(Accounts)]
-pub struct Initialize<'info> {
-    // We must specify the space in order to initialize an account.
-    // First 8 bytes are default account discriminator,
-    // next 8 bytes come from NewAccount.data being type u64.
-    // (u64 = 64 bits unsigned integer = 8 bytes)
-    #[account(init, payer = signer, space = 8 + 8)]
-    pub new_account: Account<'info, NewAccount>,
-    #[account(mut)]
-    pub signer: Signer<'info>,
-    pub system_program: Program<'info, System>,
-}
+class FizzBuzz(Account):
+  fizz: bool
+  buzz: bool
+  n: u64
 
-#[account]
-pub struct NewAccount {
-    data: u64
-}`;
+@instruction
+def init(owner: Signer, fizzbuzz: Empty[FizzBuzz]):
+  fizzbuzz.init(payer = owner, seeds = ['fizzbuzz', owner])
+
+@instruction
+def do_fizzbuzz(fizzbuzz: FizzBuzz, n: u64):
+  fizzbuzz.fizz = n % 3 == 0
+  fizzbuzz.buzz = n % 5 == 0
+  if not fizzbuzz.fizz and not fizzbuzz.buzz:
+    fizzbuzz.n = n
+  else:
+    fizzbuzz.n = 0`;
 
 const DEFAULT_EXPLORER: ExplorerJSON = {
   files: {
@@ -468,7 +463,7 @@ export class PgExplorer {
 
   static openAllParents(path: string) {
     let _path = path;
-    for (;;) {
+    for (; ;) {
       const parentPath = this.getParentPathFromPath(_path);
       const parentEl = this.getElFromPath(parentPath);
 
@@ -484,7 +479,7 @@ export class PgExplorer {
   static collapseAllFolders() {
     let rootEl = this.getRootFolderEl();
 
-    for (;;) {
+    for (; ;) {
       if (!rootEl || !rootEl.childElementCount) break;
       // Close folder
       rootEl.children[0]?.classList.remove(ClassName.OPEN);
